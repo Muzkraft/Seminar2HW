@@ -1,16 +1,23 @@
 import random
-from aiogram.dispatcher.filters import Text
+from aiogram.utils.markdown import text
 from aiogram.types import Message
 from bot_config import dp
 import text
 import game
 from keyboard import kb_new, kb_stop
+from wiki import get_wiki
 
 
 @dp.message_handler(commands=['start'])
 async def on_start(message: Message):
     await message.answer(text=f'{message.from_user.first_name}'
                               f'{text.greeting}', reply_markup=kb_new)
+
+
+@dp.message_handler(commands=['wiki'])
+async def wiki(message: Message):
+    await message.answer(text='Напиши любое слово, и я расскажу тебе что-нибудь о нем.')
+    await message.reply(get_wiki(message.text[6:]))
 
 
 @dp.message_handler(commands=['new_game'])
@@ -96,8 +103,6 @@ async def bot_turn(message):
     else:
         if total <= 28:
             take = total
-        elif 28 < total < 57:
-            take = total - 29
         else:
             var = (game.get_total() - 29) % 28
             take = var if var > 0 else random.randint(1, 28)
